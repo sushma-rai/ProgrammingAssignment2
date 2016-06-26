@@ -1,40 +1,47 @@
-## Put comments here that give an overall description of what your
-## functions do
+## The R file contains functions to create a cache for the inverse of an matrix
+## and also means of retrieving it
 
-## makeCacheMatrix will  create a matrix and make provision for storing the inverse
-## of the matrix in the cache. If the matrix is changed then the cache is emptied to
-## make space for new inverse data
+## 			makeCacheMatrix() 
+## Will  create a list of functions that will facilitate
+## the maintaing of a matrix and its inverse matrix.If the matrix is changed 
+## then the cache is emptied to clear the old data
+## The function returns a list of functions:
+## 1.set() : set input matrix
+## 2.get() : get input matrix
+## 3.setInverseMatrix(): set inverse matrix
+## 4.getInverseMatrix(): get inverse matrix
+## 5.isequal(): check if 2 matrices are equal
 
 makeCacheMatrix <- function(x = matrix()) {
-        m <- NULL
-        set <- function(y) {
-                x <<- y
-                m <<- NULL
-        }
-        get <- function() x
-        setinverse <- function(inverse) m <<- inverse
-        getinverse <- function(inverse) m
-	isequal<- function(x, y)	is.matrix(x) && is.matrix(y) && dim(x) == dim(y) && all(x == y)
-        list(set = set, get = get,
-             setinverse = setinverse ,
-             getinverse = getinverse,
-	     isequal = isequal )
-
+  inverse <- NULL
+  setData <- function(y) {
+    x <<- y
+    inverse <<- NULL
+  }
+  getData <- function() x
+  setInverseMatrix <- function(data) inverse <<- data
+  getInverseMatrix <- function() inverse
+  isEqual<- function(x, y)	is.matrix(x) && is.matrix(y) && dim(x) == dim(y) && all(x == y)
+  list(set = setData, get = getData,
+       setInverseMatrix = setInverseMatrix ,
+       getInverseMatrix = getInverseMatrix,
+       isEqual = isEqual )
+  
 }
 
-
-## This functions get the inverse from the cache is present or else creates a new inverse and
-## stores in cache
+## 			cacheSolve() 
+## This functions get the inverse from the cache if present or else 
+## creates a new inverse and stores in cache
+## The function returns the inverse of a matrix
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
-        m <- x$getinverse(x)
-        if(!is.null(m)) {
-            message("getting cached data")
-		return(m)
-        }
-        data <- x$get()
-	m <- solve(data,...)
-        x$setinverse(m)
-        m
+  m <- x$getInverseMatrix()
+  if(!is.null(m)) {
+    message("getting cached data")
+    return(m)
+  }
+  data <- x$get()
+  m <- solve(data,...)
+  x$setInverseMatrix(m)
+  m
 }
